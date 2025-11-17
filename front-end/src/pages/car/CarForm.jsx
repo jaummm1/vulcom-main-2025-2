@@ -113,12 +113,17 @@ export default function CarForm() {
       if (payload.selling_price === '') payload.selling_price = undefined;
 
       const result = Car.safeParse(payload);
+      console.log('Validation result:', result);
       if (!result.success) {
+        console.log('Validation errors:', result.error);
         const errs = {};
-        for (const err of result.error.errors) {
-          const key = err.path && err.path.length ? err.path[0] : '_form';
-          if (!errs[key]) errs[key] = err.message;
+        if (result.error && result.error.issues && Array.isArray(result.error.issues)) {
+          for (const err of result.error.issues) {
+            const key = err.path && err.path.length ? err.path[0] : '_form';
+            if (!errs[key]) errs[key] = err.message;
+          }
         }
+        console.log('Processed errors:', errs);
         setState({ ...state, inputErrors: errs });
         showWaiting(false);
         return;
@@ -298,8 +303,9 @@ export default function CarForm() {
             value={car.plates}
             onChange={handleFieldChange}
           >
-            {() => (
+            {(inputProps) => (
               <TextField
+                {...inputProps}
                 name="plates"
                 label="Placa"
                 variant="filled"

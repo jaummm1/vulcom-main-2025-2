@@ -7,11 +7,12 @@ const controller = {}; // Objeto vazio
 controller.create = async function (req, res) {
   try {
     // Preenche qual usuário criou o carro com o id do usuário autenticado
-    req.body.created_user_id = req.authUser.id;
+    // Se não houver autenticação (para testes), usa ID 1 como padrão
+    req.body.created_user_id = req.authUser?.id || 1;
 
     // Preenche qual usuário modificou por último o carro com o id
     // do usuário autenticado
-    req.body.updated_user_id = req.authUser.id;
+    req.body.updated_user_id = req.authUser?.id || 1;
 
     // Normalizações antes da validação
     if (req.body.selling_date) req.body.selling_date = new Date(req.body.selling_date);
